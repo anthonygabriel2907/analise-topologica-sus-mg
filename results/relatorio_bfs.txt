@@ -1,0 +1,33 @@
+Grafo estruturado na memoria em 119 ms!
+
+=== TOP 10 POLOS DE SAUDE ===
+Cidades que mais recebem pacientes de fora:
+1. Belo Horizonte: Recebeu 129563 pacientes
+2. Montes Claros: Recebeu 24774 pacientes
+3. Juiz de Fora: Recebeu 15651 pacientes
+4. Muriaé: Recebeu 13758 pacientes
+5. Ipatinga: Recebeu 13722 pacientes
+6. Pouso Alegre: Recebeu 11944 pacientes
+7. Uberaba: Recebeu 10723 pacientes
+8. Teófilo Otoni: Recebeu 10458 pacientes
+9. Divinópolis: Recebeu 10159 pacientes
+10. Alfenas: Recebeu 9416 pacientes
+
+=== TOP 10 DESERTOS DE SAUDE (Ambulancioterapia) ===
+Cidades que mais expulsam seus moradores para se tratar fora:
+1. Ribeirão das Neves: Expulsou 15423 pacientes
+2. Contagem: Expulsou 14753 pacientes
+3. Santa Luzia: Expulsou 11354 pacientes
+4. Vespasiano: Expulsou 8530 pacientes
+5. Ibirité: Expulsou 7288 pacientes
+6. Betim: Expulsou 7073 pacientes
+7. Sabará: Expulsou 6303 pacientes
+8. Divinópolis: Expulsou 4159 pacientes
+9. Esmeraldas: Expulsou 4074 pacientes
+10. Belo Horizonte: Expulsou 3074 pacientes
+
+=== BUSCA EM LARGURA O(V+E) ===
+Polo Belo Horizonte:
+Municipios que mandam pacientes direto para o polo: 785
+Internacoes recebidas direto: 129563
+Municipios alcancados so de forma indireta (pela rede): 67
