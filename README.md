@@ -175,6 +175,7 @@ Rode sempre a partir da raiz do projeto, porque o programa abre `data/grafo_sus_
 ## 7. Resultados
 
 Os números abaixo vêm de `data/grafo_sus_mg.csv`, `data/nodes.csv` e `results/relatorio_bfs.txt`.
+![Rede de internações do SUS em MG](assets/grafo_sus.svg)
 
 ### Panorama
 
@@ -238,7 +239,7 @@ Os números abaixo vêm de `data/grafo_sus_mg.csv`, `data/nodes.csv` e `results/
 ## 9. Reprodutibilidade e dataset
 
 - **Código:** este repositório.
-- **Dataset tratado (Zenodo):** `https://doi.org/10.5281/zenodo.24203942`
+- **Dataset tratado (Zenodo):** `https://doi.org/10.5281/zenodo.24203943`
 - **Fontes originais:** arquivos `RDMG2501.dbc` a `RDMG2512.dbc` do DATASUS e a API de localidades do IBGE (`https://servicodados.ibge.gov.br/api/v1/localidades/estados/MG/municipios`).
 
 Para refazer o tratamento a partir dos arquivos originais:
