@@ -29,7 +29,6 @@ Para responder, o programa:
 - usa uma **BFS na rede invertida** para mapear quais municípios alimentam um polo, direta e indiretamente (o polo analisado é Belo Horizonte);
 - calcula, por município, a proporção de internações feitas fora do município de residência (`pct_fora`, em `data/nodes.csv`).
 
-O trabalho descreve o fluxo de internações. Ele não avalia a qualidade nem a suficiência da oferta de saúde.
 
 ## 2. Dados e fontes
 
