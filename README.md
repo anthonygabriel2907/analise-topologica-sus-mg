@@ -117,7 +117,7 @@ Colunas de `nodes.csv`:
 │   ├── GrafoSaude.hpp         struct Aresta e declaração da classe GrafoSaude
 │   ├── GrafoSaude.cpp         construção do grafo, rankings e BFS
 │   └── analise_sus.cpp        main: lê o CSV, mede o tempo e chama as análises
-├── src/
+├── assets/
     └── grafo_sus.svg          visualização do grafo
 └── results/
     └── relatorio_bfs.txt      saída do programa, já com os nomes dos municípios
