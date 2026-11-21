@@ -113,6 +113,7 @@ Colunas de `nodes.csv`:
 │   ├── gerar_grafo_saude.py   etapa 1: arquivos .dbc do DATASUS -> grafo e resumo
 │   ├── exportar_gephi.py      etapa 2: nós e arestas em formato para visualização
 │   └── traduzir_ibge.py       troca códigos IBGE por nomes na saída do programa
+│   └── benchmark.cpp          teste de escala: tempo de construção e BFS com mais arestas
 ├── src/
 │   ├── GrafoSaude.hpp         struct Aresta e declaração da classe GrafoSaude
 │   ├── GrafoSaude.cpp         construção do grafo, rankings e BFS
@@ -162,6 +163,13 @@ sudo apt update && sudo apt install -y g++ make python3 git
 git clone https://github.com/anthonygabriel2907/analise-topologica-sus-mg.git
 cd analise-topologica-sus-mg
 make run
+```
+
+Para repetir o teste de desempenho do artigo (grafos de 1 a 100 vezes o tamanho real):
+
+```bash
+g++ -O3 -std=c++17 -Isrc src/GrafoSaude.cpp src/benchmark.cpp -o benchmark
+./benchmark
 ```
 
 Rode sempre a partir da raiz do projeto, porque o programa abre `data/grafo_sus_mg.csv` por caminho relativo.
