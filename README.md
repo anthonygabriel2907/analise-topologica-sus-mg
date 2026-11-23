@@ -112,16 +112,19 @@ Colunas de `nodes.csv`:
 ├── scripts/
 │   ├── gerar_grafo_saude.py   etapa 1: arquivos .dbc do DATASUS -> grafo e resumo
 │   ├── exportar_gephi.py      etapa 2: nós e arestas em formato para visualização
+│   ├── extrair_motivos.py     etapa 3: relê os .dbc e guarda o tipo de cada internação
+│   ├── analise_motivos.py     etapa 3: tabelas por complexidade, especialidade, CID e caráter
 │   └── traduzir_ibge.py       troca códigos IBGE por nomes na saída do programa
-│   └── benchmark.cpp          teste de escala: tempo de construção e BFS com mais arestas
 ├── src/
 │   ├── GrafoSaude.hpp         struct Aresta e declaração da classe GrafoSaude
 │   ├── GrafoSaude.cpp         construção do grafo, rankings e BFS
-│   └── analise_sus.cpp        main: lê o CSV, mede o tempo e chama as análises
+│   ├── analise_sus.cpp        main: lê o CSV, mede o tempo e chama as análises
+│   └── benchmark.cpp          teste de escala: tempo de construção e BFS com mais arestas
 ├── assets/
-    └── grafo_sus.svg          visualização do grafo
+│   └── grafo_sus.svg          visualização do grafo
 └── results/
-    └── relatorio_bfs.txt      saída do programa, já com os nomes dos municípios
+    ├── relatorio_bfs.txt      saída do programa, já com os nomes dos municípios
+    └── motivos_*.csv          tabelas da análise do tipo de internação
 ```
 
 Fluxo de execução:
@@ -144,6 +147,18 @@ saída com códigos IBGE
 results/relatorio_bfs.txt
 ```
 
+A análise do tipo de internação é um segundo fluxo, que não altera o grafo:
+
+```
+RDMG25xx.dbc (DATASUS)
+      |  scripts/extrair_motivos.py
+      v
+data/motivos_agregado.csv
+      |  scripts/analise_motivos.py  (usa data/nodes.csv)
+      v
+results/motivos_*.csv
+```
+
 Componentes principais:
 
 - **`GrafoSaude::adicionarAresta`**: insere a aresta nas duas listas de adjacência e acumula os graus de entrada e de saída.
@@ -153,6 +168,9 @@ Componentes principais:
 - **`traduzir_ibge.py`**: lê a saída do programa pela entrada padrão e troca os códigos de 6 dígitos que começam com `31` pelo nome do município.
 - **`gerar_grafo_saude.py`**: lê os 12 arquivos `.dbc`, aplica os filtros da seção 2 e grava `grafo_sus_mg.csv` e `resumo_municipios.csv`.
 - **`exportar_gephi.py`**: monta `nodes.csv` (com graus ponderados e `pct_fora`), `edges.csv` e `edges_top3.csv` a partir das saídas da etapa 1.
+- **`extrair_motivos.py`**: relê os 12 arquivos `.dbc` com os mesmos filtros da etapa 1 e agrega, por município de residência, dentro ou fora do município, especialidade (`ESPEC`), complexidade (`COMPLEX`), capítulo do CID-10 (`DIAG_PRINC`) e caráter da internação (`CAR_INT`). Ao final confere os totais (1.589.022 internações, 581.742 fora).
+- **`analise_motivos.py`**: lê o arquivo agregado e gera as tabelas por tipo e por porte do município.
+- **`benchmark.cpp`**: mede o tempo de construção e da BFS com 25% a 100% das arestas reais e com grafos sintéticos de até 100 vezes o tamanho.
 
 ## 6. Como compilar e executar
 
@@ -170,6 +188,13 @@ Para repetir o teste de desempenho do artigo (grafos de 1 a 100 vezes o tamanho 
 ```bash
 g++ -O3 -std=c++17 -Isrc src/GrafoSaude.cpp src/benchmark.cpp -o benchmark
 ./benchmark
+```
+
+Para repetir a análise do tipo de internação (precisa dos `.dbc` originais, como a etapa 1):
+
+```bash
+python3 scripts/extrair_motivos.py   # confere os totais ao final
+python3 scripts/analise_motivos.py
 ```
 
 Rode sempre a partir da raiz do projeto, porque o programa abre `data/grafo_sus_mg.csv` por caminho relativo.
@@ -235,6 +260,24 @@ Os números abaixo vêm de `data/grafo_sus_mg.csv`, `data/nodes.csv` e `results/
 - Juntos, os 852 são todos os outros municípios do estado.
 - Belo Horizonte recebe 129.563 internações de fora, cerca de 22% de todas as internações feitas fora do município de residência (581.742).
 
+### Tipo de internação que sai do município
+
+Percentuais calculados sobre as 581.742 internações feitas fora do município de residência.
+
+| Tipo | % do que sai | % de todas as internações do tipo que acontecem fora |
+|---|---|---|
+| Média complexidade | 85,3 | 34,4 |
+| Alta complexidade | 14,7 | 58,2 |
+| Cirurgia | 47,0 | 43,3 |
+| Clínica médica | 33,5 | 30,1 |
+| Obstetrícia | 10,3 | 36,3 |
+| Pediatria | 6,9 | 36,0 |
+| Neoplasias (CID-10, cap. II) | 12,2 | 53,8 |
+| Eletivo | 26,5 | 41,6 |
+| Não eletivo (urgência e outros) | 73,5 | 35,1 |
+
+Nos 348 municípios com menos de 500 internações no ano, só 10,5% do que sai é de alta complexidade. Os resultados completos estão em `results/motivos_*.csv`.
+
 ## 8. Limitações e leitura dos resultados
 
 - **Só internações do SUS.** O arquivo RD é do SIH/SUS e não inclui atendimento particular nem ambulatorial.
@@ -243,6 +286,7 @@ Os números abaixo vêm de `data/grafo_sus_mg.csv`, `data/nodes.csv` e `results/
 - **O dado não explica o motivo.** Ele mostra onde o morador mora e onde o hospital fica, mas não diz se a internação fora do município foi por falta de serviço, por encaminhamento previsto na organização regional do SUS ou por escolha do paciente. Por isso o trabalho descreve fluxos e não conclui que há falha de atendimento.
 - **Nomes simplificados no código.** No código e na saída do programa aparecem termos como "pacientes", "desertos" e "expulsou". Aqui usamos "internações" e "municípios de maior saída", que descrevem o que é medido.
 - **Recorte.** Um estado (MG) e um ano (2025). Moradores de outros estados e registros com município ignorado foram removidos.
+- **Complexidade, especialidade e caráter são os registrados na internação.** A complexidade é a do procedimento, e "média" é uma faixa ampla, então não indica que o município pudesse atender o que sai. Consideramos eletivo o caráter `01` e não eletivo os demais.
 
 ## 9. Reprodutibilidade e dataset
 
@@ -259,6 +303,9 @@ python3 scripts/gerar_grafo_saude.py
 python3 scripts/exportar_gephi.py   # precisa de internet (nomes dos municípios, API do IBGE)
 make run
 ```
+
+python3 scripts/extrair_motivos.py
+python3 scripts/analise_motivos.py
 
 Rode todos os comandos a partir da raiz do projeto, porque os scripts usam caminhos relativos a `data/`.
 
